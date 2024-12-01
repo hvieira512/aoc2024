@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func RenderDayHeader(day int) {
@@ -15,22 +15,17 @@ func RenderDayHeader(day int) {
 }
 
 func ReadLines(filename string) ([]string, error) {
-	var lines []string
-
-	file, err := os.Open(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
+	dataStr := strings.TrimSpace(string(data))
+	lines := strings.Split(dataStr, "\n")
 
 	return lines, nil
+}
+
+func DeleteAtIndex(slice []int, index int) []int {
+	return append(slice[:index], slice[index+1:]...)
 }
