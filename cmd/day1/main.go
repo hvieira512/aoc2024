@@ -18,8 +18,7 @@ func partOne(lines []string) int {
 		lPos, leftie := getSmallest(leftValues)
 		rPos, rightie := getSmallest(rightValues)
 
-		diff := math.Abs(float64(leftie - rightie))
-		result += int(diff)
+		result += int(math.Abs(float64(leftie - rightie)))
 
 		leftValues = u.DeleteAtIndex(leftValues, lPos)
 		rightValues = u.DeleteAtIndex(rightValues, rPos)
@@ -29,14 +28,20 @@ func partOne(lines []string) int {
 }
 
 func partTwo(lines []string) int {
-	// leftValues, rightValues := getNumbers(lines)
-	// result := 0
+	leftValues, rightValues := getNumbers(lines)
+	result := 0
 
-	// for _, leftValue := range leftValues {
-	// count := countLeftInRight(leftValue, leftValues, rightValues)
-	// }
+	for _, leftValue := range leftValues {
+		count := 0
+		for _, rightValue := range rightValues {
+			if leftValue == rightValue {
+				count++
+			}
+		}
+		result += leftValue * count
+	}
 
-	return 0
+	return result
 }
 
 func getSmallest(numbers []int) (int, int) {
