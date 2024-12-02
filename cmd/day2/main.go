@@ -28,12 +28,10 @@ func isReportSafe(report []int) bool {
 	op := isIncreasingOrDecreasing(report, 0, 1)
 
 	for i := 0; i < len(report); i++ {
-		// check for out of bounds
 		if i+1 == len(report) {
 			break
 		}
 
-		// check for greater than 3 difference
 		diff := math.Abs(float64(report[i] - report[i+1]))
 		if diff > 3 || diff == 0 {
 			return false
@@ -48,8 +46,6 @@ func isReportSafe(report []int) bool {
 			if report[i] < report[i+1] {
 				return false
 			}
-		case "equal":
-			return false
 		}
 
 	}
@@ -57,10 +53,10 @@ func isReportSafe(report []int) bool {
 	return true
 }
 
-func isIncreasingOrDecreasing(report []int, firstIdx int, secondIdx int) string {
+func isIncreasingOrDecreasing(report []int, a int, b int) string {
 	op := ""
 
-	if report[firstIdx] > report[secondIdx] {
+	if report[a] > report[b] {
 		op = "decrement"
 	} else {
 		op = "increment"
