@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 	"strings"
 
@@ -24,49 +25,53 @@ func getReports(lines []string) [][]int {
 }
 
 func isReportSafe(report []int) bool {
-	for range report {
-		op := getOperator(report, 0, 1)
-		fmt.Println(op)
+	op := isIncreasingOrDecreasing(report, 0, 1)
 
-		for i := 1; i < len(report); i++ {
-			fmt.Println(op, report[i], report[i+1])
-			switch op {
-			case "<":
-				if report[i] > report[i+1] {
-					return false
-				}
-			case ">":
-				if report[i] < report[i+1] {
-					return false
-				}
+	for i := 0; i < len(report); i++ {
+		if i+1 == len(report) {
+			break
+		}
+
+		diff := math.Abs(float64(report[i] - report[i+1]))
+		if diff > 3 || diff == 0 {
+			return false
+		}
+
+		switch op {
+		case "increment":
+			if report[i] > report[i+1] {
+				return false
+			}
+		case "decrement":
+			if report[i] < report[i+1] {
+				return false
 			}
 		}
-	}
 
+	}
+	fmt.Println("Safe")
 	return true
 }
 
-func getOperator(report []int, firstIndex int, secondIndex int) string {
+func isIncreasingOrDecreasing(report []int, a int, b int) string {
 	op := ""
-	if report[firstIndex] > report[secondIndex] {
-		op = "<"
+
+	if report[a] > report[b] {
+		op = "decrement"
 	} else {
-		op = ">"
+		op = "increment"
 	}
+
 	return op
 }
 
 func partOne(lines []string) int {
-	// store the reports with their levels
 	reports := getReports(lines)
 
 	count := 0
 	for _, report := range reports {
 		if isReportSafe(report) {
-			fmt.Printf("%v is safe\n", report)
 			count++
-		} else {
-			fmt.Printf("%v is unsafe\n", report)
 		}
 	}
 
@@ -75,7 +80,7 @@ func partOne(lines []string) int {
 
 func main() {
 	u.RenderDayHeader(2)
-	lines, err := u.ReadLines("cmd/day2/example.txt")
+	lines, err := u.ReadLines("cmd/day2/input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
