@@ -49,7 +49,6 @@ func isReportSafe(report []int) bool {
 		}
 
 	}
-	fmt.Println("Safe")
 	return true
 }
 
@@ -78,6 +77,33 @@ func partOne(lines []string) int {
 	return count
 }
 
+func partTwo(lines []string) int {
+	reports := getReports(lines)
+
+	count := 0
+	for _, report := range reports {
+		if isReportSafeV2(report) {
+			count++
+		}
+	}
+	return count
+}
+
+func isReportSafeV2(report []int) bool {
+	if !isReportSafe(report) {
+		for i := range report {
+			newAttempt := append([]int{}, report[:i]...)
+			newAttempt = append(newAttempt, report[i+1:]...)
+
+			if isReportSafe(newAttempt) {
+				return true
+			}
+		}
+		return false
+	}
+	return true
+}
+
 func main() {
 	u.RenderDayHeader(2)
 	lines, err := u.ReadLines("cmd/day2/input.txt")
@@ -86,9 +112,5 @@ func main() {
 	}
 
 	fmt.Printf("Part 1: %v\n", partOne(lines))
-	// fmt.Printf("Part 2: %v\n", partTwo(lines))
-}
-
-func partTwo(lines []string) int {
-	panic("unimplemented")
+	fmt.Printf("Part 2: %v\n", partTwo(lines))
 }
