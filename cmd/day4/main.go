@@ -15,49 +15,68 @@ func partOne(lines []string) (result int) {
 	allXCoords := getAllCharPos(lines, "X")
 
 	for _, xCoord := range allXCoords {
-		xRow := xCoord.x
-		xCol := xCoord.y
+		x := xCoord.x
+		y := xCoord.y
 
-		adjLetterCoords := []Coordinate{
-			{x: xRow - 1, y: xCol - 1},
-			{x: xRow - 1, y: xCol},
-			{x: xRow - 1, y: xCol + 1},
-			{x: xRow + 1, y: xCol - 1},
-			{x: xRow + 1, y: xCol},
-			{x: xRow + 1, y: xCol + 1},
-			{x: xRow, y: xCol - 1},
-			{x: xRow, y: xCol + 1},
+		directions := []Coordinate{
+			{x: x - 1, y: y - 1},
+			{x: x - 1, y: y},
+			{x: x - 1, y: y + 1},
+			{x: x + 1, y: y - 1},
+			{x: x + 1, y: y},
+			{x: x + 1, y: y + 1},
+			{x: x, y: y - 1},
+			{x: x, y: y + 1},
 		}
 
-		nextLetters := []string{"M", "A", "S"}
-		for _, adjLetter := range adjLetterCoords {
-			if isCoordOutOfBounds(adjLetter, lines) {
-				continue
-			}
-
-			x, y := adjLetter.x, adjLetter.y
-			for _, nextLetter := range nextLetters {
-				if string(lines[x][y]) == nextLetter {
-					// save the direction of the next letter
-					nextLetterCoord := Coordinate{
-						x: x - xRow,
-						y: y - xCol,
-					}
-
-					fmt.Println(nextLetterCoord)
-				}
-			}
+		if foundXmas(directions, lines, xCoord) {
+			result++
 		}
 	}
 
 	return result
 }
 
-func isCoordOutOfBounds(coord Coordinate, lines []string) bool {
-	x, y := coord.x, coord.y
-	xLen, yLen := len(lines)-1, len(lines[0])-1
+func foundXmas(directions []Coordinate, lines []string, xCoords Coordinate) bool {
+	for _, direction := range directions {
+		mCoords := Coordinate{x: direction.x, y: direction.y}
+		// fmt.Printf("Checking M at: %v\n", mCoords)
+		if isCoordOutOfBounds(mCoords, lines) || string(lines[mCoords.x][mCoords.y]) != "M" {
+			continue
+		}
 
-	return x < 0 || x > xLen || y < 0 || y > yLen
+		aCoords := getNextCoords(mCoords, xCoords, lines, "A")
+		if aCoords.x == -1 || aCoords.y == -1 {
+			continue
+		}
+
+		sCoords := getNextCoords(aCoords, mCoords, lines, "S")
+		if sCoords.x == -1 || sCoords.y == -1 {
+			continue
+		}
+
+		fmt.Printf("%v[%v,%v], ", string(lines[xCoords.x][xCoords.y]), xCoords.x, xCoords.y)
+		fmt.Printf("%v[%v,%v], ", string(lines[mCoords.x][mCoords.y]), mCoords.x, mCoords.y)
+		fmt.Printf("%v[%v,%v], ", string(lines[aCoords.x][aCoords.y]), aCoords.x, aCoords.y)
+		fmt.Printf("%v[%v,%v]\n", string(lines[sCoords.x][sCoords.y]), sCoords.x, sCoords.y)
+		return true
+	}
+	return false
+}
+
+func getNextCoords(current, previous Coordinate, lines []string, target string) Coordinate {
+	dx := current.x - previous.x
+	dy := current.y - previous.y
+	next := Coordinate{x: current.x + dx, y: current.y + dy}
+
+	if isCoordOutOfBounds(next, lines) || string(lines[next.x][next.y]) != target {
+		return Coordinate{x: -1, y: -1}
+	}
+	return next
+}
+
+func isCoordOutOfBounds(coord Coordinate, lines []string) bool {
+	return coord.x < 0 || coord.x >= len(lines) || coord.y < 0 || coord.y >= len(lines[coord.x])
 }
 
 func getAllCharPos(lines []string, char string) []Coordinate {
