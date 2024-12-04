@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -24,6 +25,28 @@ func ReadLines(filename string) ([]string, error) {
 	lines := strings.Split(dataStr, "\n")
 
 	return lines, nil
+}
+
+func ReadGrid(filename string) ([][]rune, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	grid := [][]rune{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		grid = append(grid, []rune(line))
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return grid, nil
+
 }
 
 func DeleteAtIndex(slice []int, index int) []int {
