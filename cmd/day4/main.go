@@ -22,8 +22,9 @@ func partOne(grid [][]rune, word string) int {
 	checkDirection := func(x, y, dx, dy int) bool {
 		for i := 0; i < len(word); i++ {
 			nx, ny := x+dx*i, y+dy*i
-			fmt.Println(nx, ny)
-			if nx < 0 || ny < 0 || nx >= rows || ny >= cols || grid[nx][ny] != wordRunes[i] {
+			outOfBounds := nx < 0 || ny < 0 || nx >= rows || ny >= cols
+
+			if outOfBounds || grid[nx][ny] != wordRunes[i] {
 				return false
 			}
 		}
@@ -51,4 +52,5 @@ func main() {
 		return
 	}
 	fmt.Printf("Part 1: %v\n", partOne(grid, "XMAS"))
+	fmt.Printf("Part 2: %v\n", partOne(grid, "MAS"))
 }
