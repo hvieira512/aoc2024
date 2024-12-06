@@ -111,8 +111,90 @@ func partOne(guardMap []string) int {
 	return len(allVisitedPos)
 }
 
+func partTwo(guardMap []string) int {
+	rows := len(guardMap)
+	cols := len(guardMap[0])
+	loop := 0
+
+	possibilities := []Coordinate{}
+	for i := range guardMap {
+		for j := range guardMap[i] {
+			if string(guardMap[i][j]) != "#" {
+				newPossibility := Coordinate{x: i, y: j}
+				possibilities = append(possibilities, newPossibility)
+			}
+		}
+	}
+
+	directionOffsets := map[string]Coordinate{
+		"up":    {-1, 0},
+		"down":  {1, 0},
+		"right": {0, 1},
+		"left":  {0, -1},
+	}
+
+	rotateRight := map[string]string{
+		"up":    "right",
+		"right": "down",
+		"down":  "left",
+		"left":  "up",
+	}
+
+	guard := getGuard(guardMap)
+	if guard.pos.x == -1 && guard.pos.y == -1 {
+		panic("Guard wasn't found!")
+	}
+
+	origMap := make([]string, len(guardMap))
+	copy(origMap, guardMap)
+	initialGuard := guard
+
+	for _, p := range possibilities {
+		guard := initialGuard
+		row := []rune(guardMap[p.x])
+		row[p.y] = '#'
+		guardMap[p.x] = string(row)
+
+		allVisitedPos := []Coordinate{}
+		visited := make(map[Coordinate]string)
+		for {
+			offset := directionOffsets[guard.direction]
+			nextDirection := Coordinate{x: guard.pos.x + offset.x, y: guard.pos.y + offset.y}
+
+			inBounds := nextDirection.x >= 0 && nextDirection.y >= 0 &&
+				nextDirection.x < rows && nextDirection.y < cols
+
+			if !inBounds {
+				break
+			}
+
+			nx := nextDirection.x
+			ny := nextDirection.y
+
+			if guardMap[nx][ny] == '#' {
+				guard.direction = rotateRight[guard.direction]
+				continue
+			}
+
+			guard.pos = nextDirection
+
+			allVisitedPos = append(allVisitedPos, guard.pos)
+			if visited[guard.pos] == guard.direction {
+				loop++
+				break
+			}
+
+			visited[guard.pos] = guard.direction
+		}
+		copy(guardMap, origMap)
+	}
+
+	return loop
+}
+
 func main() {
 	guardMap, _ := utils.ReadLines("cmd/day6/input.txt")
 
 	fmt.Printf("Part 1: %v\n", partOne(guardMap))
+	fmt.Printf("Part 2: %v\n", partTwo(guardMap))
 }
