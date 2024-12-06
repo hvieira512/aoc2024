@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -51,4 +52,13 @@ func ReadGrid(filename string) ([][]rune, error) {
 
 func DeleteAtIndex(slice []int, index int) []int {
 	return append(slice[:index], slice[index+1:]...)
+}
+
+func SliceExists(target []int, list [][]int) bool {
+	for _, slice := range list {
+		if reflect.DeepEqual(slice, target) {
+			return true
+		}
+	}
+	return false
 }
