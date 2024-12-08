@@ -9,7 +9,7 @@ This year, I will be trying my best using Go, to learn more about the language.
 - [x] Day 3
 - [ ] Day 4
 - [ ] Day 5
-- [ ] Day 6
+- [x] Day 6
 - [ ] Day 7
 - [ ] Day 8
 - [ ] Day 9
