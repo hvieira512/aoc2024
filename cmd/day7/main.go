@@ -5,10 +5,35 @@ import (
 	"strconv"
 	"strings"
 
-	u "github.com/hvieira512/aoc2024/cmd/utils"
+	"github.com/hvieira512/aoc2024/cmd/utils"
 )
 
-func getOperatorsComb(operators []string, length int) []string {
+type Equation struct {
+	test    int
+	numbers []int
+}
+
+func parseInput(lines []string) []Equation {
+	equations := []Equation{}
+
+	for i := range lines {
+		parts := strings.Split(lines[i], ": ")
+
+		test, _ := strconv.Atoi(parts[0])
+
+		numbersStr := strings.Fields(parts[1])
+		numbers := []int{}
+		for _, numberStr := range numbersStr {
+			number, _ := strconv.Atoi(numberStr)
+			numbers = append(numbers, number)
+		}
+		equations = append(equations, Equation{test: test, numbers: numbers})
+	}
+
+	return equations
+}
+
+func getOperators(operators []string, length int) []string {
 	var result []string
 	var helper func(current string, level int)
 
@@ -26,61 +51,44 @@ func getOperatorsComb(operators []string, length int) []string {
 	return result
 }
 
-func getEquations(lines []string) map[int][]int {
-	equations := map[int][]int{}
-
-	for _, line := range lines {
-		sepIdx := strings.Index(line, ":")
-		result, _ := strconv.Atoi(line[0:sepIdx])
-
-		numbersStr := strings.Fields(line[sepIdx+1:])
-		intNumbers := []int{}
-		for i := range numbersStr {
-			intNumber, _ := strconv.Atoi(numbersStr[i])
-			intNumbers = append(intNumbers, intNumber)
+func testEquation(equation Equation, ops []string) bool {
+	for _, opAttempt := range ops {
+		result := equation.numbers[0]
+		for i := 0; i < len(equation.numbers)-1; i++ {
+			if string(opAttempt[i]) == "+" {
+				result += equation.numbers[i+1]
+			} else if string(opAttempt[i]) == "*" {
+				result *= equation.numbers[i+1]
+			}
 		}
-		equations[result] = intNumbers
+		if result == equation.test {
+			return true
+		}
 	}
 
-	return equations
+	return false
 }
 
-func partOne(lines []string) int {
-	total := 0
-	equations := getEquations(lines)
-	allOps := []string{"+", "*"}
+func partOne(equations []Equation) int {
+	result := 0
+	opsChars := []string{"+", "*"}
 
-	for k, v := range equations {
-		ops := getOperatorsComb(allOps, len(v)-1)
-		found := false
+	for _, equation := range equations {
+		ops := getOperators(opsChars, len(equation.numbers)-1)
 
-		for i := range ops {
-			tmpResult := v[0]
-			for j := 0; j < len(v)-1; j++ {
-				switch string(ops[i][j]) {
-				case "+":
-					tmpResult += v[j+1]
-				case "*":
-					tmpResult *= v[j+1]
-				}
-			}
-			if k == tmpResult && !found {
-				fmt.Printf("Testing equation: %d with numbers %v\n", k, v)
-				fmt.Printf("  Combination %s => Result: %d\n", ops[i], tmpResult)
-				total += k
-				found = true
-				break
-			}
+		if testEquation(equation, ops) {
+			result += equation.test
 		}
 	}
 
-	return total
+	return result
 }
 
 func main() {
-	u.RenderDayHeader(7)
-	lines, _ := u.ReadLines("cmd/day7/example.txt")
+	utils.RenderDayHeader(7)
+	lines, _ := utils.ReadLines("cmd/day7/input.txt")
+	equations := parseInput(lines)
 
-	fmt.Printf("Part 1: %v\n", partOne(lines))
-	// fmt.Printf("Part 2: %v\n", partTwo(lines))
+	fmt.Printf("Part 1: %v\n", partOne(equations))
+	// fmt.Printf("Part 2: %v\n", partTwo(equations))
 }
