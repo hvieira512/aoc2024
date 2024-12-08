@@ -58,10 +58,8 @@ func isOrdered(update []int, rules [][2]int) (bool, int) {
 	return true, update[len(update)/2]
 }
 
-func partOne(lines []string) int {
+func partOne(rules [][2]int, updates [][]int) int {
 	total := 0
-
-	rules, updates := parseInput(lines)
 
 	for _, update := range updates {
 		good, mid := isOrdered(update, rules)
@@ -73,9 +71,52 @@ func partOne(lines []string) int {
 	return total
 }
 
+func sortUpdate(update []int, rules [][2]int) []int {
+	for {
+		isSorted := true
+		for i := 0; i < len(update)-1; i++ {
+			if containsRule(rules, update[i+1], update[i]) {
+				update[i], update[i+1] = update[i+1], update[i]
+				isSorted = false
+			}
+		}
+
+		if isSorted {
+			return update
+		}
+	}
+}
+
+func containsRule(rules [][2]int, a, b int) bool {
+	for _, rule := range rules {
+		if rule[0] == a && rule[1] == b {
+			return true
+		}
+	}
+	return false
+}
+
+func partTwo(rules [][2]int, updates [][]int) int {
+	total := 0
+
+	for _, update := range updates {
+		good, _ := isOrdered(update, rules)
+		if !good {
+			// order it
+			update := sortUpdate(update, rules)
+			mid := update[len(update)/2]
+			total += mid
+		}
+	}
+
+	return total
+}
+
 func main() {
 	utils.RenderDayHeader(5)
 	lines, _ := utils.ReadLines("cmd/day5/input.txt")
+	rules, updates := parseInput(lines)
 
-	fmt.Printf("Part 1: %v\n", partOne(lines))
+	fmt.Printf("Part 1: %v\n", partOne(rules, updates))
+	fmt.Printf("Part 2: %v\n", partTwo(rules, updates))
 }
