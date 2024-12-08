@@ -84,11 +84,67 @@ func partOne(equations []Equation) int {
 	return result
 }
 
+// ------------------
+// ---- PART TWO ----
+// ------------------
+func partTwo(equations []Equation) int {
+	result := 0
+	opsChars := []string{"+", "*", "||"}
+
+	for _, equation := range equations {
+		if equation.test != 7290 {
+			continue
+		}
+		fmt.Println(equation)
+		ops := getOperators(opsChars, len(equation.numbers)-1)
+
+		if testEquation(equation, ops) {
+			result += equation.test
+		} else if testEquationV2(equation, ops) {
+			result += equation.test
+		}
+	}
+
+	return result
+}
+
+func testEquationV2(equation Equation, ops []string) bool {
+	for _, opAttempt := range ops {
+		equation.numbers = updateEquation(equation.numbers, opAttempt)
+		result := equation.numbers[0]
+		for i := 0; i < len(equation.numbers)-1; i++ {
+			if string(opAttempt[i]) == "+" {
+				result += equation.numbers[i+1]
+			} else if string(opAttempt[i]) == "*" {
+				result *= equation.numbers[i+1]
+			}
+		}
+		if result == equation.test {
+			return true
+		}
+	}
+	return false
+}
+
+func updateEquation(numbers []int, op string) []int {
+	for i := 0; i < len(numbers)-1; i++ {
+		fmt.Println(op, i)
+		if op == "||" {
+			fmt.Println(numbers[i], numbers[i+1])
+			concatenated, _ := strconv.Atoi(fmt.Sprintf("%d%d", numbers[i], numbers[i+1]))
+			numbers[i] = concatenated
+			numbers = append(numbers[:i+1], numbers[i+2:]...)
+			i--
+		}
+	}
+	return numbers
+}
+
 func main() {
 	utils.RenderDayHeader(7)
-	lines, _ := utils.ReadLines("cmd/day7/input.txt")
+	lines, _ := utils.ReadLines("cmd/day7/example.txt")
 	equations := parseInput(lines)
 
-	fmt.Printf("Part 1: %v\n", partOne(equations))
-	// fmt.Printf("Part 2: %v\n", partTwo(equations))
+	// fmt.Printf("Part 1: %v\n", partOne(equations))
+	fmt.Printf("Part 2: %v\n", partTwo(equations))
 }
