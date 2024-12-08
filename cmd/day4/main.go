@@ -53,10 +53,6 @@ func hasXmas(i, j, n int, grid [][]rune) bool {
 		return false
 	}
 
-	if grid[i][j] != 'A' {
-		return false
-	}
-
 	diag1 := string(grid[i-1][j-1]) + string(grid[i][j]) + string(grid[i+1][j+1])
 	diag2 := string(grid[i-1][j+1]) + string(grid[i][j]) + string(grid[i+1][j-1])
 
@@ -73,8 +69,10 @@ func partTwo(grid [][]rune) int {
 
 	for i := range n {
 		for j := range n {
-			if grid[i][j] == 'A' && hasXmas(i, j, n, grid) {
-				count++
+			if grid[i][j] == 'A' {
+				if hasXmas(i, j, n, grid) {
+					count++
+				}
 			}
 		}
 	}
