@@ -32,13 +32,19 @@ func firstParse(diskmap string) (blocks string) {
 }
 
 func isSPComplete(diskmap string) bool {
-	idx := strings.Index(diskmap, ".")
-	firstHalf := diskmap[0:idx]
-	secondHalf := diskmap[idx:]
+	blocks := strings.Split(diskmap, ".")
 
-	if strings.Contains(firstHalf, ".") || strings.ContainsAny(secondHalf, "0123456789") {
+	count := 0
+	for i := range blocks {
+		if blocks[i] != "" {
+			count++
+		}
+	}
+
+	if count != 1 {
 		return false
 	}
+
 	return true
 }
 
@@ -46,7 +52,7 @@ func getBlocks(diskmap string) []string {
 	auxBlocks := strings.Split(diskmap, ".")
 	blocks := []string{}
 	for _, auxBlock := range auxBlocks {
-		if len(auxBlock) != 0 { // ignore empty lines
+		if len(auxBlock) != 0 {
 			blocks = append(blocks, auxBlock)
 		}
 	}
@@ -56,7 +62,7 @@ func getBlocks(diskmap string) []string {
 func secondParse(diskmap string) string {
 	for i := 0; i < 10; i++ {
 		if isSPComplete(diskmap) {
-			break
+			return diskmap
 		}
 
 		// get the first and last block of this iteration
@@ -65,21 +71,15 @@ func secondParse(diskmap string) string {
 		fBlock := blocks[0]
 		lBlock := blocks[len(blocks)-1]
 
-		fLastDigitIndex := findDigitIdxDiskmap(fBlock, diskmap)
-		lLastDigitIndex := findDigitIdxDiskmap(lBlock, diskmap)
+		fBlockLast := getIdxLastDigitBlock(fBlock, diskmap, 1)
+		lBlockLast := getIdxLastDigitBlock(lBlock, diskmap, -1)
 
-		fmt.Println(i)
-		fmt.Println(fBlock, lBlock)
-		fmt.Println(fLastDigitIndex, lLastDigitIndex)
-		fmt.Println()
-
-		if fLastDigitIndex != -1 && lLastDigitIndex != -1 && fLastDigitIndex+1 < len(diskmap) {
-			swapCharAtIndex(&diskmap, fLastDigitIndex+1, rune(diskmap[lLastDigitIndex]))
-			swapCharAtIndex(&diskmap, lLastDigitIndex, '.')
+		if fBlockLast != -1 && lBlockLast != -1 && fBlockLast+1 < len(diskmap) {
+			swapCharAtIndex(&diskmap, fBlockLast+1, rune(diskmap[lBlockLast]))
+			swapCharAtIndex(&diskmap, lBlockLast, '.')
 		}
 	}
-
-	return diskmap
+	return ""
 }
 
 func swapCharAtIndex(s *string, index int, newChar rune) {
@@ -90,22 +90,26 @@ func swapCharAtIndex(s *string, index int, newChar rune) {
 	*s = string(runes)
 }
 
-func findDigitIdxDiskmap(block, diskmap string) int {
-	blockIndex := strings.Index(diskmap, block)
-	if blockIndex == -1 {
-		return -1
-	}
-
-	lastDigitIndex := -1
-	// search from the end of the block
-	for i := len(block) - 1; i >= 0; i-- {
-		if unicode.IsDigit(rune(block[i])) {
-			lastDigitIndex = blockIndex + i
-			break
+func getIdxLastDigitBlock(block, diskmap string, order int) int {
+	blockIdx := -1
+	if order == 1 {
+		blockIdx = strings.Index(diskmap, block)
+	} else if order == -1 {
+		for i := len(diskmap) - len(block); i >= 0; i-- {
+			if diskmap[i:i+len(block)] == block {
+				blockIdx = i
+				break
+			}
 		}
 	}
 
-	return lastDigitIndex
+	for i := len(block) - 1; i >= 0; i-- {
+		if unicode.IsDigit(rune(block[i])) {
+			return blockIdx + i
+		}
+	}
+
+	return -1
 }
 
 func partOne(diskmap string) int {
@@ -114,6 +118,7 @@ func partOne(diskmap string) int {
 	diskmap = "12345"
 	diskmap = firstParse(diskmap)
 	diskmap = secondParse(diskmap)
+	fmt.Println(diskmap)
 
 	return result
 }
