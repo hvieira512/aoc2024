@@ -12,11 +12,12 @@ func main() {
 	lines, _ := utils.ReadLines("cmd/day9/input.txt")
 	diskmap := lines[0]
 
-	fmt.Printf("\nPart 1: %v\n", partOne(diskmap))
+	fmt.Printf("Part 1: %v\n", partOne(diskmap))
+	fmt.Printf("Part 2: %v\n", partTwo(diskmap))
 }
 
 func partOne(diskmap string) int {
-	disk := getFilesystem(diskmap)
+	disk := getDisk(diskmap)
 	blanks := getBlanks(disk)
 	disk = ampiphod(disk, blanks)
 
@@ -57,7 +58,7 @@ func getBlanks(filesystem []int) []int {
 	return blanks
 }
 
-func getFilesystem(diskmap string) []int {
+func getDisk(diskmap string) []int {
 	filesystem := []int{}
 	fileID := 0
 
@@ -75,4 +76,65 @@ func getFilesystem(diskmap string) []int {
 		}
 	}
 	return filesystem
+}
+
+// part two
+func partTwo(diskmap string) int {
+	files := map[int][2]int{}
+	blanks := [][2]int{}
+
+	fid := 0
+	pos := 0
+
+	for i, char := range diskmap {
+		x, err := strconv.Atoi(string(char))
+		if err != nil {
+			panic(err)
+		}
+
+		if i%2 == 0 {
+			if x == 0 {
+				panic("bro what, this shouldn't be there")
+			}
+			files[fid] = [2]int{pos, x}
+			fid++
+		} else {
+			if x != 0 {
+				blanks = append(blanks, [2]int{pos, x})
+			}
+		}
+		pos += x
+	}
+
+	for fid > 0 {
+		fid--
+		pos, size := files[fid][0], files[fid][1]
+		for i, blank := range blanks {
+			start, length := blank[0], blank[1]
+			if start >= pos {
+				blanks = blanks[:i]
+				break
+			}
+			if size <= length {
+				files[fid] = [2]int{start, size}
+				if size == length {
+					blanks = append(blanks[:i], blanks[i+1:]...)
+				} else {
+					blanks[i] = [2]int{start + size, length - size}
+				}
+				break
+			}
+		}
+	}
+
+	total := 0
+	for fid, file := range files {
+		fmt.Println(fid, file)
+		pos, size := file[0], file[1]
+		for x := pos; x < pos+size; x++ {
+			total += fid * x
+		}
+	}
+
+	return total
 }
