@@ -8,9 +8,11 @@ import (
 )
 
 func main() {
+	utils.RenderDayHeader(8)
 	grid, _ := utils.ReadGridRune("cmd/day8/input.txt")
 
 	fmt.Printf("Part 1: %v\n", partOne(grid))
+	fmt.Printf("Part 2: %v\n", partTwo(grid))
 }
 
 func partOne(grid [][]rune) int {
@@ -27,23 +29,7 @@ func partOne(grid [][]rune) int {
 		}
 	}
 
-	displayMap(grid, rows, cols, antinodes)
-
 	return count
-}
-
-func displayMap(grid [][]rune, rows, cols int, antinodes [][2]int) {
-	for r := range rows {
-		for c := range cols {
-			for _, a := range antinodes {
-				if r == a[0] && c == a[1] {
-					fmt.Printf("#")
-				}
-			}
-			fmt.Printf("%v", string(grid[r][c]))
-		}
-		fmt.Println()
-	}
 }
 
 func getAntennas(grid [][]rune, rows, cols int) map[rune][][2]int {
@@ -80,6 +66,41 @@ func getAntinodes(antennas map[rune][][2]int) [][2]int {
 				y = 2*c2 - c1
 				if !slices.Contains(antinodes, [2]int{x, y}) {
 					antinodes = append(antinodes, [2]int{x, y})
+				}
+			}
+		}
+	}
+	return antinodes
+}
+
+func partTwo(grid [][]rune) int {
+	rows, cols := len(grid), len(grid[0])
+
+	antennas := getAntennas(grid, rows, cols)
+	antinodes := getAntinodesV2(antennas, rows, cols)
+
+	return len(antinodes)
+}
+
+func getAntinodesV2(antennas map[rune][][2]int, rows, cols int) map[[2]int]struct{} {
+	antinodes := make(map[[2]int]struct{})
+
+	for _, array := range antennas {
+		for i := 0; i < len(array); i++ {
+			for j := 0; j < len(array); j++ {
+				if i == j {
+					continue
+				}
+				r1, c1 := array[i][0], array[i][1]
+				r2, c2 := array[j][0], array[j][1]
+				dr := r2 - r1
+				dc := c2 - c1
+				r := r1
+				c := c1
+				for r >= 0 && r < rows && c >= 0 && c < cols {
+					antinodes[[2]int{r, c}] = struct{}{}
+					r += dr
+					c += dc
 				}
 			}
 		}
