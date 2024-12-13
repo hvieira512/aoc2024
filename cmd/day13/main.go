@@ -18,8 +18,21 @@ func main() {
 	lines, _ := utils.ReadLines("cmd/day13/input.txt")
 	machines := getMachines(lines)
 
-	fmt.Printf("Part 1: %v\n", partOne(machines))
-	fmt.Printf("Part 2: %v\n", partTwo(machines))
+	fmt.Printf("Part 1: %v\n", solve(machines, 1))
+	fmt.Printf("Part 2: %v\n", solve(machines, 2))
+}
+
+func solve(machines []ClawMachine, part int) int64 {
+	result := int64(0)
+	for _, machine := range machines {
+		if part == 2 {
+			for i := range len(machine.Prize) {
+				machine.Prize[i] += 10000000000000
+			}
+		}
+		result += cramer(machine.Buttons, machine.Prize)
+	}
+	return result
 }
 
 func getMachines(lines []string) []ClawMachine {
@@ -50,24 +63,6 @@ func getMachines(lines []string) []ClawMachine {
 	}
 
 	return machines
-}
-
-func partOne(machines []ClawMachine) int64 {
-	result := int64(0)
-	for _, machine := range machines {
-		result += cramer(machine.Buttons, machine.Prize)
-	}
-	return result
-}
-
-func partTwo(machines []ClawMachine) int64 {
-	result := int64(0)
-	for _, machine := range machines {
-		machine.Prize[0] += 10000000000000
-		machine.Prize[1] += 10000000000000
-		result += cramer(machine.Buttons, machine.Prize)
-	}
-	return result
 }
 
 func cramer(A [2][2]int64, B [2]int64) int64 {
