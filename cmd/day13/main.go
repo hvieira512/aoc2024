@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -10,19 +9,17 @@ import (
 )
 
 type ClawMachine struct {
-	Buttons [2][2]int
-	Prize   [2]int
+	Buttons [2][2]int64
+	Prize   [2]int64
 }
 
 func main() {
 	utils.RenderDayHeader(13)
-	lines, err := utils.ReadLines("cmd/day13/input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
+	lines, _ := utils.ReadLines("cmd/day13/input.txt")
 	machines := getMachines(lines)
 
 	fmt.Printf("Part 1: %v\n", partOne(machines))
+	fmt.Printf("Part 2: %v\n", partTwo(machines))
 }
 
 func getMachines(lines []string) []ClawMachine {
@@ -38,17 +35,16 @@ func getMachines(lines []string) []ClawMachine {
 		for i := 0; i <= 1; i++ {
 			buttonAux := strings.Split(lines[r+i][10:], ": ")[0]
 			coordsAux := strings.Split(buttonAux, ", ")
-			x, _ := strconv.Atoi(strings.Split(coordsAux[0], "+")[1])
-			y, _ := strconv.Atoi(strings.Split(coordsAux[1], "+")[1])
-			machine.Buttons[i] = [2]int{x, y}
+			x, _ := strconv.ParseInt(strings.Split(coordsAux[0], "+")[1], 10, 64)
+			y, _ := strconv.ParseInt(strings.Split(coordsAux[1], "+")[1], 10, 64)
+			machine.Buttons[i] = [2]int64{x, y}
 		}
 
-		// Get prize
 		prizeAux := strings.Split(lines[r+2][7:], ": ")[0]
 		coordsAux := strings.Split(prizeAux, ", ")
-		x, _ := strconv.Atoi(strings.Split(coordsAux[0], "=")[1])
-		y, _ := strconv.Atoi(strings.Split(coordsAux[1], "=")[1])
-		machine.Prize = [2]int{x, y}
+		x, _ := strconv.ParseInt(strings.Split(coordsAux[0], "=")[1], 10, 64)
+		y, _ := strconv.ParseInt(strings.Split(coordsAux[1], "=")[1], 10, 64)
+		machine.Prize = [2]int64{x, y}
 
 		machines = append(machines, machine)
 	}
@@ -56,29 +52,40 @@ func getMachines(lines []string) []ClawMachine {
 	return machines
 }
 
-func partOne(machines []ClawMachine) int {
-	result := 0
+func partOne(machines []ClawMachine) int64 {
+	result := int64(0)
 	for _, machine := range machines {
-		result += findCheapest(machine.Buttons, machine.Prize)
+		result += cramer(machine.Buttons, machine.Prize)
 	}
 	return result
 }
 
-func findCheapest(A [2][2]int, B [2]int) int {
-	cheapest := [2]int{}
-	maxPresses, minTokens := 100, -1
+func partTwo(machines []ClawMachine) int64 {
+	result := int64(0)
+	for _, machine := range machines {
+		machine.Prize[0] += 10000000000000
+		machine.Prize[1] += 10000000000000
+		result += cramer(machine.Buttons, machine.Prize)
+	}
+	return result
+}
 
-	for x := 1; x <= maxPresses; x++ {
-		for y := 1; y <= maxPresses; y++ {
-			if x*A[0][0]+y*A[1][0] == B[0] && x*A[0][1]+y*A[1][1] == B[1] {
-				tokens := x*3 + y
-				if minTokens == -1 || (tokens < minTokens) {
-					minTokens = x*3 + y
-					cheapest = [2]int{x, y}
-				}
-			}
-		}
+func cramer(A [2][2]int64, B [2]int64) int64 {
+	aux := A[1][0]
+	A[1][0] = A[0][1]
+	A[0][1] = aux
+
+	detA := (A[0][0] * A[1][1]) - (A[0][1] * A[1][0])
+	if detA == 0 {
+		return 0
 	}
 
-	return cheapest[0]*3 + cheapest[1]
+	x := (B[0]*A[1][1] - B[1]*A[0][1]) / detA
+	y := (A[0][0]*B[1] - B[0]*A[1][0]) / detA
+
+	if x*A[0][0]+y*A[0][1] != B[0] || x*A[1][0]+y*A[1][1] != B[1] {
+		return 0
+	}
+
+	return x*3 + y
 }
