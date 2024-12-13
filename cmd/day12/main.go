@@ -14,6 +14,7 @@ func main() {
 	regions := getRegions(grid, n)
 
 	fmt.Printf("Part 1: %v\n", partOne(regions))
+	fmt.Printf("Part 2: %v\n", partTwo(regions))
 }
 
 func partOne(regions [][][2]int) int {
@@ -96,6 +97,61 @@ func getRegions(grid [][]rune, n int) [][][2]int {
 	return regions
 }
 
-func partTwo(lines []string) int {
-	panic("unimplemented")
+func partTwo(regions [][][2]int) int {
+	result := 0
+
+	for _, region := range regions {
+		result += len(region) * sides(region)
+	}
+
+	return result
+}
+
+func sides(region [][2]int) int {
+	cornerCandidates := map[[2]float64]struct{}{}
+
+	// convert region to float64 for later calcs
+	reg := [][2]float64{}
+	for _, cell := range region {
+		cr, cc := float64(cell[0]), float64(cell[1])
+		reg = append(reg, [2]float64{cr, cc})
+	}
+
+	for _, r := range reg {
+		for _, offset := range [][2]float64{
+			{-0.5, -0.5}, {0.5, -0.5}, {0.5, 0.5}, {-0.5, 0.5},
+		} {
+			cornerCandidates[[2]float64{r[0] + offset[0], r[1] + offset[1]}] = struct{}{}
+		}
+	}
+
+	corners := 0
+	for corner := range cornerCandidates {
+		config := [4]bool{
+			slices.Contains(reg, [2]float64{corner[0] - 0.5, corner[1] - 0.5}),
+			slices.Contains(reg, [2]float64{corner[0] + 0.5, corner[1] - 0.5}),
+			slices.Contains(reg, [2]float64{corner[0] + 0.5, corner[1] + 0.5}),
+			slices.Contains(reg, [2]float64{corner[0] - 0.5, corner[1] + 0.5}),
+		}
+
+		number := 0
+		for _, c := range config {
+			if c {
+				number++
+			}
+		}
+
+		switch number {
+		case 1:
+			corners++
+		case 2:
+			if (config[0] && !config[1] && config[2] && !config[3]) || (!config[0] && config[1] && !config[2] && config[3]) {
+				corners += 2
+			}
+		case 3:
+			corners++
+		}
+	}
+
+	return corners
 }
