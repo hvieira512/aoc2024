@@ -60,13 +60,8 @@ func partTwo(lines []string) int {
 	result := 0
 
 	for _, line := range lines {
-		// line = "mul(3,4)mul(4,5)"
-		// remove stuff between each don't() and do()
 		line = justDoOrDontIt(line)
-
-		// sanitize string with regex
 		line = regexPartOne(line)
-		fmt.Println(line)
 
 		mults := strings.Split(line, "mul")
 		for _, mult := range mults {
