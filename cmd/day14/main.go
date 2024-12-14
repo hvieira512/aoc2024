@@ -13,9 +13,11 @@ type Robot struct {
 	vel [2]int
 }
 
-var rows int = 11
-var cols int = 7
-var seconds int = 100
+const (
+	Width   = 101
+	Height  = 103
+	Seconds = 100
+)
 
 func parseRobots(lines []string) []Robot {
 	var robots []Robot
@@ -47,45 +49,46 @@ func parseRobot(line string) Robot {
 
 func main() {
 	utils.RenderDayHeader(14)
-	lines, _ := utils.ReadLines("cmd/day14/example.txt")
+	lines, _ := utils.ReadLines("cmd/day14/input.txt")
 	robots := parseRobots(lines)
 
 	fmt.Printf("Part 1: %v\n", partOne(robots))
 }
 
 func partOne(robots []Robot) int {
-	midX, midY := rows/2, cols/2
-	quadrants := map[int][][2]int{
-		1: {}, 2: {}, 3: {}, 4: {},
-	}
+	q1, q2, q3, q4 := 0, 0, 0, 0
+	midX, midY := (Width-1)/2, (Height-1)/2
 
 	for _, robot := range robots {
 		robot.pos = moveRobot(robot)
-		robot.pos = [2]int{robot.pos[1], robot.pos[0]}
 
-		var quad int
 		switch {
 		case robot.pos[0] > midX && robot.pos[1] > midY:
-			quad = 1
+			q1++
 		case robot.pos[0] > midX && robot.pos[1] < midY:
-			quad = 2
+			q2++
 		case robot.pos[0] < midX && robot.pos[1] < midY:
-			quad = 3
+			q3++
 		case robot.pos[0] < midX && robot.pos[1] > midY:
-			quad = 4
-		default:
-			continue
+			q4++
 		}
-		quadrants[quad] = append(quadrants[quad], robot.pos)
 	}
 
-	return len(quadrants[1]) * len(quadrants[2]) * len(quadrants[3]) * len(quadrants[4])
+	return q1 * q2 * q3 * q4
 }
 
 func moveRobot(robot Robot) [2]int {
-	px, py, vx, vy := robot.pos[0], robot.pos[1], robot.vel[0], robot.vel[1]
-	return [2]int{
-		((px+vx*seconds)%rows + rows) % rows,
-		((py+vy*seconds)%cols + cols) % cols,
+	px, py := robot.pos[0], robot.pos[1]
+	vx, vy := robot.vel[0], robot.vel[1]
+
+	x := (px + vx*Seconds) % Width
+	if x < 0 {
+		x += Width
 	}
+	y := (py + vy*Seconds) % Height
+	if y < 0 {
+		y += Height
+	}
+
+	return [2]int{x, y}
 }
