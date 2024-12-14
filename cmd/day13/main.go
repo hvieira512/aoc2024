@@ -39,36 +39,39 @@ func getMachines(lines []string) []ClawMachine {
 	var machines []ClawMachine
 	rows := len(lines)
 
-	for r := 0; r < rows; r += 3 {
-		if len(lines[r]) == 0 {
-			r++
+	for i := 0; i < rows; i += 3 {
+		if len(lines[i]) == 0 {
+			i++
 		}
-
-		var machine ClawMachine
-		for i := 0; i <= 1; i++ {
-			buttonAux := strings.Split(lines[r+i][10:], ": ")[0]
-			coordsAux := strings.Split(buttonAux, ", ")
-			x, _ := strconv.ParseInt(strings.Split(coordsAux[0], "+")[1], 10, 64)
-			y, _ := strconv.ParseInt(strings.Split(coordsAux[1], "+")[1], 10, 64)
-			machine.Buttons[i] = [2]int64{x, y}
-		}
-
-		prizeAux := strings.Split(lines[r+2][7:], ": ")[0]
-		coordsAux := strings.Split(prizeAux, ", ")
-		x, _ := strconv.ParseInt(strings.Split(coordsAux[0], "=")[1], 10, 64)
-		y, _ := strconv.ParseInt(strings.Split(coordsAux[1], "=")[1], 10, 64)
-		machine.Prize = [2]int64{x, y}
-
-		machines = append(machines, machine)
+		machines = append(machines, parseMachine(lines[i:i+3]))
 	}
 
 	return machines
 }
 
+func parseMachine(lines []string) ClawMachine {
+	var machine ClawMachine
+	for i := 0; i < 2; i++ {
+		coords := parseCoordinates(lines[i][10:], "+")
+		machine.Buttons[i] = [2]int64{coords[0], coords[1]}
+	}
+	coords := parseCoordinates(lines[2][7:], "=")
+	machine.Prize = [2]int64{coords[0], coords[1]}
+	return machine
+}
+
+func parseCoordinates(input, sep string) [2]int64 {
+	parts := strings.Split(input, ", ")
+	coords := [2]int64{}
+	for i, part := range parts {
+		splitPart := strings.Split(part, sep)
+		coords[i], _ = strconv.ParseInt(splitPart[len(splitPart)-1], 10, 64)
+	}
+	return coords
+}
+
 func cramer(A [2][2]int64, B [2]int64) int64 {
-	aux := A[1][0]
-	A[1][0] = A[0][1]
-	A[0][1] = aux
+	A[0][1], A[1][0] = A[1][0], A[0][1]
 
 	detA := (A[0][0] * A[1][1]) - (A[0][1] * A[1][0])
 	if detA == 0 {
@@ -78,9 +81,13 @@ func cramer(A [2][2]int64, B [2]int64) int64 {
 	x := (B[0]*A[1][1] - B[1]*A[0][1]) / detA
 	y := (A[0][0]*B[1] - B[0]*A[1][0]) / detA
 
-	if x*A[0][0]+y*A[0][1] != B[0] || x*A[1][0]+y*A[1][1] != B[1] {
+	if !verifySolution(A, B, x, y) {
 		return 0
 	}
 
 	return x*3 + y
+}
+
+func verifySolution(A [2][2]int64, B [2]int64, x, y int64) bool {
+	return x*A[0][0]+y*A[0][1] == B[0] && x*A[1][0]+y*A[1][1] == B[1]
 }
