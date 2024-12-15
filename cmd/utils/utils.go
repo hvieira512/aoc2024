@@ -11,17 +11,17 @@ import (
 
 func RenderDayHeader(day int) {
 	if day < 10 {
-		fmt.Printf("-----------------------------")
-		fmt.Printf("---- Advent of Code 2024 ----")
-		fmt.Printf("-----------------------------")
+		fmt.Println("-----------------------------")
+		fmt.Println("---- Advent of Code 2024 ----")
+		fmt.Println("-----------------------------")
 		fmt.Printf("----        Day %v        ----\n", day)
-		fmt.Printf("-----------------------------")
+		fmt.Println("-----------------------------")
 	} else {
-		fmt.Printf("-----------------------------")
-		fmt.Printf("---- Advent of Code 2024 ----")
-		fmt.Printf("-----------------------------")
+		fmt.Println("-----------------------------")
+		fmt.Println("---- Advent of Code 2024 ----")
+		fmt.Println("-----------------------------")
 		fmt.Printf("---        Day %v        ----\n", day)
-		fmt.Printf("-----------------------------")
+		fmt.Println("-----------------------------")
 	}
 }
 
