@@ -50,7 +50,7 @@ func parseRobot(line string) Robot {
 
 func main() {
 	utils.RenderDayHeader(14)
-	lines, _ := utils.ReadLines("cmd/day14/" + Filename + ".txt")
+	lines, _ := utils.Strings("cmd/day14/" + Filename + ".txt")
 	robots := parseRobots(lines)
 
 	fmt.Printf("Part 1: %v\n", partOne(robots))

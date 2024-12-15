@@ -15,7 +15,7 @@ type ClawMachine struct {
 
 func main() {
 	utils.RenderDayHeader(13)
-	lines, _ := utils.ReadLines("cmd/day13/input.txt")
+	lines, _ := utils.Strings("cmd/day13/input.txt")
 	machines := getMachines(lines)
 
 	fmt.Printf("Part 1: %v\n", solve(machines, 1))

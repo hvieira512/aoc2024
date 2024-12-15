@@ -74,7 +74,7 @@ func getNumbers(lines []string) ([]int, []int) {
 
 func main() {
 	u.RenderDayHeader(1)
-	lines, err := u.ReadLines("cmd/day1/input.txt")
+	lines, err := u.Strings("cmd/day1/input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}

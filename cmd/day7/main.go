@@ -33,7 +33,7 @@ func getEquations(lines []string) []Equation {
 
 func main() {
 	utils.RenderDayHeader(7)
-	lines, _ := utils.ReadLines("cmd/day7/input.txt")
+	lines, _ := utils.Strings("cmd/day7/input.txt")
 	equations := getEquations(lines)
 
 	fmt.Printf("Part 1: %v\n", partOne(equations))

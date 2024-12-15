@@ -9,7 +9,7 @@ import (
 
 func main() {
 	utils.RenderDayHeader(8)
-	grid, _ := utils.ReadGridRune("cmd/day8/input.txt")
+	grid, _ := utils.Runes("cmd/day8/input.txt")
 
 	fmt.Printf("Part 1: %v\n", partOne(grid))
 	fmt.Printf("Part 2: %v\n", partTwo(grid))

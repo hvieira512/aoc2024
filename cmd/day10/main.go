@@ -80,7 +80,7 @@ func partOne(grid [][]int) int {
 
 func main() {
 	u.RenderDayHeader(10)
-	grid, _ := u.ReadGridInt("cmd/day10/input.txt")
+	grid, _ := u.Ints("cmd/day10/input.txt")
 
 	fmt.Printf("Part 1: %v\n", partOne(grid))
 	fmt.Printf("Part 2: %v\n", partTwo(grid))

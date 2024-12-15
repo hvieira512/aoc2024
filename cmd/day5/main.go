@@ -114,7 +114,7 @@ func partTwo(rules [][2]int, updates [][]int) int {
 
 func main() {
 	utils.RenderDayHeader(5)
-	lines, _ := utils.ReadLines("cmd/day5/input.txt")
+	lines, _ := utils.Strings("cmd/day5/input.txt")
 	rules, updates := parseInput(lines)
 
 	fmt.Printf("Part 1: %v\n", partOne(rules, updates))

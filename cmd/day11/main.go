@@ -10,7 +10,7 @@ import (
 
 func main() {
 	utils.RenderDayHeader(11)
-	lines, _ := utils.ReadLines("cmd/day11/input.txt")
+	lines, _ := utils.Strings("cmd/day11/input.txt")
 	stones := getStones(lines)
 
 	fmt.Printf("Part 1: %v\n", solve(stones, 25))

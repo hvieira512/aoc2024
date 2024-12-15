@@ -81,7 +81,7 @@ func partTwo(grid [][]rune) int {
 }
 
 func main() {
-	grid, _ := u.ReadGridRune("cmd/day4/input.txt")
+	grid, _ := u.Runes("cmd/day4/input.txt")
 
 	fmt.Printf("Part 1: %v\n", partOne(grid, "XMAS"))
 	fmt.Printf("Part 2: %v\n", partTwo(grid))

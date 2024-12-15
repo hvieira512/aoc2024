@@ -11,21 +11,21 @@ import (
 
 func RenderDayHeader(day int) {
 	if day < 10 {
-		fmt.Println("-----------------------------")
-		fmt.Println("---- Advent of Code 2024 ----")
-		fmt.Println("-----------------------------")
+		fmt.Printf("-----------------------------")
+		fmt.Printf("---- Advent of Code 2024 ----")
+		fmt.Printf("-----------------------------")
 		fmt.Printf("----        Day %v        ----\n", day)
-		fmt.Println("-----------------------------")
+		fmt.Printf("-----------------------------")
 	} else {
-		fmt.Println("-----------------------------")
-		fmt.Println("---- Advent of Code 2024 ----")
-		fmt.Println("-----------------------------")
+		fmt.Printf("-----------------------------")
+		fmt.Printf("---- Advent of Code 2024 ----")
+		fmt.Printf("-----------------------------")
 		fmt.Printf("---        Day %v        ----\n", day)
-		fmt.Println("-----------------------------")
+		fmt.Printf("-----------------------------")
 	}
 }
 
-func ReadLines(filename string) ([]string, error) {
+func Strings(filename string) ([]string, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func ReadLines(filename string) ([]string, error) {
 	return lines, nil
 }
 
-func ReadGridRune(filename string) ([][]rune, error) {
+func Runes(filename string) ([][]rune, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func SliceExists(target []int, list [][]int) bool {
 	return false
 }
 
-func ReadGridInt(filename string) ([][]int, error) {
+func Ints(filename string) ([][]int, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err

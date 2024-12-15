@@ -106,7 +106,7 @@ func isReportSafeV2(report []int) bool {
 
 func main() {
 	u.RenderDayHeader(2)
-	lines, err := u.ReadLines("cmd/day2/input.txt")
+	lines, err := u.Strings("cmd/day2/input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}

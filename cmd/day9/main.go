@@ -9,7 +9,7 @@ import (
 
 func main() {
 	utils.RenderDayHeader(9)
-	lines, _ := utils.ReadLines("cmd/day9/input.txt")
+	lines, _ := utils.Strings("cmd/day9/input.txt")
 	diskmap := lines[0]
 
 	fmt.Printf("Part 1: %v\n", partOne(diskmap))

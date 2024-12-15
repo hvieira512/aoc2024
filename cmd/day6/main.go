@@ -193,7 +193,7 @@ func partTwo(guardMap []string) int {
 }
 
 func main() {
-	guardMap, _ := utils.ReadLines("cmd/day6/input.txt")
+	guardMap, _ := utils.Strings("cmd/day6/input.txt")
 
 	fmt.Printf("Part 1: %v\n", partOne(guardMap))
 	fmt.Printf("Part 2: %v\n", partTwo(guardMap))

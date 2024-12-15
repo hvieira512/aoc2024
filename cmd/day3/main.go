@@ -85,7 +85,7 @@ func justDoOrDontIt(input string) string {
 
 func main() {
 	u.RenderDayHeader(3)
-	lines, _ := u.ReadLines("cmd/day3/input.txt")
+	lines, _ := u.Strings("cmd/day3/input.txt")
 
 	fmt.Printf("Part 1: %v\n", partOne(lines))
 	fmt.Printf("Part 2: %v\n", partTwo(lines))

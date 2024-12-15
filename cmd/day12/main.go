@@ -9,7 +9,7 @@ import (
 
 func main() {
 	utils.RenderDayHeader(12)
-	grid, _ := utils.ReadGridRune("cmd/day12/input.txt")
+	grid, _ := utils.Runes("cmd/day12/input.txt")
 	n := len(grid)
 	regions := getRegions(grid, n)
 
