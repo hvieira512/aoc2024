@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	Filename = "example"
+	Filename = "input"
 )
 
 func parseInput(lines []string) (map[rune][][2]int, string, [2]int) {
@@ -76,13 +76,11 @@ func partOne(warehouse map[rune][][2]int, moves string, robot [2]int) int {
 		next := getNextDirection(move, robot)
 
 		if slices.Contains(warehouse['#'], next) {
-			renderMap(warehouse, move, robot)
 			continue
 		}
 
 		if !slices.Contains(warehouse['O'], next) {
 			robot = next
-			renderMap(warehouse, move, robot)
 			continue
 		}
 
@@ -103,17 +101,27 @@ func partOne(warehouse map[rune][][2]int, moves string, robot [2]int) int {
 			continue
 		}
 
-		// free space -> freePos
-		// robot -> robot
-
-		renderMap(warehouse, move, robot)
+		for char, positions := range warehouse {
+			for i, pos := range positions {
+				if pos == next {
+					warehouse[char][i] = free
+					break
+				}
+			}
+		}
+		robot = next
 	}
 
-	return 0
+	sum := 0
+	for _, box := range warehouse['O'] {
+		sum += (100 * box[0]) + box[1]
+	}
+
+	return sum
 }
 
 func renderMap(warehouse map[rune][][2]int, move rune, robot [2]int) {
-	rows, cols := 8, 8
+	rows, cols := 10, 10
 
 	fmt.Printf("Move %v:\n", string(move))
 	for r := range rows {
